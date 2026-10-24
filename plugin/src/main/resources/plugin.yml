@@ -1,0 +1,5 @@
+name: Skyblock
+version: '1.0.0'
+main: com.yeetle.skyblock.SkyblockPlugin
+api-version: '26.3'
+description: Mein erstes PaperMC-Plugin

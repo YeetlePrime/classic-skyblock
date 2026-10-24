@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+IMAGE="papermc"
+
+if [[ $# -ne 2 ]]; then
+    echo "Verwendung: $0 <paper-build> <paper-sha256>"
+    exit 1
+fi
+
+PAPER_BUILD="$1"
+PAPER_SHA256="$2"
+
+podman build \
+    --build-arg MC_VERSION=26.3 \
+    --build-arg PAPER_BUILD="$PAPER_BUILD" \
+    --build-arg PAPER_SHA256="$PAPER_SHA256" \
+    -t "$IMAGE" \
+    -f Containerfile .
+
+echo "Image erfolgreich gebaut: $IMAGE"
+

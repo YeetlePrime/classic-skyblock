@@ -1,0 +1,25 @@
+services:
+  papermc:
+    container_name: papermc
+    image: papermc
+    userns-mode: keep-id
+    user: "${HOST_UID}:${HOST_GID}"
+    build:
+      context: .
+      dockerfile: Containerfile
+      args:
+        MC_VERSION: "26.3"
+        PAPER_BUILD: "207"
+        PAPER_SHA256: "2df3b846f70716907d380915cc026667a9cadedf99b1ec680b0c5ff0e6132526"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    ports:
+      - "25565:25565/tcp"
+    volumes:
+      - ./data:/data
+      - ../plugin/build/libs/classic-skyblock-1.0.0.jar:/data/plugins/classic-skyblock-1.0.0.jar:ro
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+

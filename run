@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+script_dir="$(realpath "$(dirname "$0")")"
+papermc_dir="${script_dir}/papermc"
+plugin_dir="${script_dir}/plugin"
+
+HOST_UID=$(id -u)
+HOST_GID=$(id -g)
+export HOST_UID
+export HOST_GID
+
+cd "$papermc_dir" || exit
+podman-compose down
+
+cd "$plugin_dir" || exit
+./gradlew build || exit
+
+cd "$papermc_dir" || exit
+podman-compose up
+

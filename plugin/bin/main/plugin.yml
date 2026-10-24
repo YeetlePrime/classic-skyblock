@@ -1,0 +1,10 @@
+name: Skyblock
+version: '1.0.0'
+main: com.yeetle.skyblock.Skyblock
+api-version: '26.3'
+description: Mein erstes PaperMC-Plugin
+
+commands:
+  hallo:
+    description: Gibt eine Begruessung aus
+    usage: /hallo
