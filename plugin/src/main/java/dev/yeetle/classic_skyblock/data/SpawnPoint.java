@@ -1,4 +1,4 @@
-package com.yeetle.skyblock.data;
+package dev.yeetle.classic_skyblock.data;
 
 import org.bukkit.Location;
 import org.bukkit.World;

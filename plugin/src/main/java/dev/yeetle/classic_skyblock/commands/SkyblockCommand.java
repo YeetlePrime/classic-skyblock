@@ -1,10 +1,10 @@
-package com.yeetle.skyblock.commands;
+package dev.yeetle.classic_skyblock.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.yeetle.skyblock.IslandService;
-import com.yeetle.skyblock.SaveDataManager;
+import dev.yeetle.classic_skyblock.IslandService;
+import dev.yeetle.classic_skyblock.SaveDataManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.World;

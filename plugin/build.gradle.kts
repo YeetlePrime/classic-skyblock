@@ -2,7 +2,7 @@ plugins {
     java
 }
 
-group = "com.yeetle.skyblock"
+group = "dev.yeetle.classic_skyblock"
 version = "1.0.0"
 
 repositories {

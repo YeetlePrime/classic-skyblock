@@ -1,13 +1,8 @@
-package com.yeetle.skyblock;
+package dev.yeetle.classic_skyblock;
 
-import com.yeetle.skyblock.commands.SkyblockCommand;
+import dev.yeetle.classic_skyblock.commands.SkyblockCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin implements Listener {

@@ -1,4 +1,4 @@
-package com.yeetle.skyblock.data;
+package dev.yeetle.classic_skyblock.data;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
-package com.yeetle.skyblock;
+package dev.yeetle.classic_skyblock;
 
 import org.bukkit.*;
-import com.yeetle.skyblock.data.IslandData;
+import dev.yeetle.classic_skyblock.data.IslandData;
 import org.bukkit.entity.Player;
 
 import java.io.File;

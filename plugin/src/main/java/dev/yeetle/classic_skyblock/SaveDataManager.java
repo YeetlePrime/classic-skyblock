@@ -1,4 +1,4 @@
-package com.yeetle.skyblock;
+package dev.yeetle.classic_skyblock;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,10 +6,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.yeetle.skyblock.data.IslandData;
-import com.yeetle.skyblock.data.PlayerData;
-import com.yeetle.skyblock.data.SaveData;
-import com.yeetle.skyblock.data.SpawnPoint;
+import dev.yeetle.classic_skyblock.data.IslandData;
+import dev.yeetle.classic_skyblock.data.PlayerData;
+import dev.yeetle.classic_skyblock.data.SaveData;
+import dev.yeetle.classic_skyblock.data.SpawnPoint;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
