@@ -135,13 +135,13 @@ public class SaveDataManager {
 	}
 
 	/**
-	 * Finds the id of the island with the given overworld.
+	 * Finds the id of the island with the given world.
 	 *
-	 * @return the island id or null if there is no island with that overworld
+	 * @return the island id or null if there is no island with that world
 	 */
-	public UUID findIslandId(NamespacedKey overworldKey) {
+	public UUID findIslandId(NamespacedKey worldKey) {
 		return saveData.getIslands().entrySet().stream()
-			.filter(entry -> overworldKey.equals(entry.getValue().getOverworldKey()))
+			.filter(entry -> worldKey.equals(entry.getValue().getOverworldKey()) || worldKey.equals(entry.getValue().getNetherKey()))
 			.map(Map.Entry::getKey)
 			.findFirst()
 			.orElse(null);

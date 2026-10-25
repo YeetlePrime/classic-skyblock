@@ -1,10 +1,12 @@
 package dev.yeetle.classic_skyblock;
 
+import org.bukkit.PortalType;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -35,11 +37,28 @@ public class IslandCreationHandler implements Listener {
 
 	/**
 	 * Creates the nether before the portal listener sends the player there.
-	 * The destination is not changed here, that is up to the portal listener.
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPortal(PlayerPortalEvent event) {
 		if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+			return;
+		}
+
+		World source = event.getFrom().getWorld();
+
+		if (!islandService.isIslandWorld(source) || source.getEnvironment() != World.Environment.NORMAL) {
+			return;
+		}
+
+		islandService.createNetherIfMissing(source, event.getTo());
+	}
+
+	/**
+	 * Creates the nether before the portal listener sends the entity there.
+	 */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onEntityPortal(EntityPortalEvent event) {
+		if (!event.getPortalType().equals(PortalType.NETHER) || event.getTo() == null) {
 			return;
 		}
 

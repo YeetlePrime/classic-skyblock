@@ -1,7 +1,7 @@
 package dev.yeetle.classic_skyblock;
 
-import org.bukkit.*;
 import dev.yeetle.classic_skyblock.data.IslandData;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -10,21 +10,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.UUID;
-import java.util.stream.Stream;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 public class IslandService {
 	private final Logger log;
 	private final SaveDataManager saveDataManager;
-	
+
 	private static final String OVERWORLD_PREFIX = "island_overworld_";
 	private static final String NETHER_PREFIX = "island_nether_";
-	
+
 	public IslandService(Logger logger, SaveDataManager saveDataManager) {
 		this.log = logger;
 		this.saveDataManager = saveDataManager;
 	}
-	
+
 	public boolean isIslandWorld(World world) {
 		return isIslandWorld(world.getKey());
 	}
@@ -32,23 +32,23 @@ public class IslandService {
 	public boolean isIslandWorld(NamespacedKey key) {
 		return key.getNamespace().equals(Globals.NAMESPACE);
 	}
-	
+
 	public World createIslandForPlayer(Player player) {
 		UUID islandId = UUID.randomUUID();
-		
+
 		World overworld = createIslandOverworld(islandId);
 		if (overworld == null) {
 			throw new RuntimeException("Die Welt konnte nicht erzeugt werden.");
 		}
-		
+
 		saveDataManager.saveWorld(player, islandId, overworld);
-		
+
 		player.teleport(overworld.getSpawnLocation());
 		log.info("A new island was created for player %s.".formatted(player.getName()));
 
 		return overworld;
 	}
-	
+
 	/**
 	 * Deletes the island of the player, if there is one, and creates a new one.
 	 * Everyone who is currently on the old island is moved to the default world first.
@@ -58,13 +58,13 @@ public class IslandService {
 	public World regenerateIslandForPlayer(Player player) {
 		UUID islandId = saveDataManager.findIslandId(player);
 		IslandData islandData = saveDataManager.getIslandData(islandId);
-		
+
 		World oldOverworld = islandData.getOverworldKey() == null ? null : loadWorld(islandData.getOverworldKey());
 		// An unloaded nether must not be loaded (and thereby created) only to move players out of it.
 		World oldNether = islandData.getNetherKey() == null ? null : Bukkit.getWorld(islandData.getNetherKey());
 
 		World newOverworld = createIslandForPlayer(player);
-		
+
 		if (oldOverworld != null) {
 			for (Player p : oldOverworld.getPlayers()) {
 				p.teleport(newOverworld.getSpawnLocation());
@@ -158,21 +158,21 @@ public class IslandService {
 			log.warning("Tried to load corresponding world of default world %s.\nThis is a programming error.".formatted(world.getKey().toString()));
 			return null;
 		}
-		
-		NamespacedKey correspondingKey = getCorrespondingWorldKey(world.getKey());
-		
+
+		NamespacedKey correspondingKey = getCorrespondingWorldKey(world);
+
 		return loadWorld(correspondingKey);
 	}
-	
+
 	public World loadWorld(NamespacedKey key) {
 		if (!isIslandWorld(key)) {
-			log.warning("Tried to load or create an island with invalid Namespace %s.\nThis is a programming error.".formatted(key.getNamespace()));	
+			log.warning("Tried to load or create an island with invalid Namespace %s.\nThis is a programming error.".formatted(key.getNamespace()));
 			return Bukkit.createWorld(new WorldCreator(key));
 		}
-		
+
 		WorldCreator creator = new WorldCreator(key)
 			.generator(new VoidChunkGenerator());
-			
+
 		if (key.getKey().startsWith(OVERWORLD_PREFIX)) {
 			return creator.environment(World.Environment.NORMAL).createWorld();
 		} else if (key.getKey().startsWith(NETHER_PREFIX)) {
@@ -182,7 +182,7 @@ public class IslandService {
 		log.warning("Tried to load or create an island, but the key is not supported.\n".formatted(key.getNamespace()));
 		return null;
 	}
-	
+
 	private World createIslandOverworld(UUID islandId) {
 		NamespacedKey key = new NamespacedKey(Globals.NAMESPACE, OVERWORLD_PREFIX + islandId.toString());
 		WorldCreator creator = new WorldCreator(key)
@@ -190,7 +190,7 @@ public class IslandService {
 			.environment(World.Environment.NORMAL);
 
 		World world = creator.createWorld();
-		
+
 		if (world == null) {
 			log.warning("Overworld island %s could not be created.".formatted(key.toString()));
 			return null;
@@ -200,13 +200,13 @@ public class IslandService {
 
 		return world;
 	}
-	
+
 	/**
 	 * Creates the nether of an island and builds its island, if the island has no nether key yet.
 	 * The island is built around the position where the player would have arrived through the portal.
 	 *
 	 * @param overworld the overworld of the island
-	 * @param arrival the location where vanilla would send the player in the nether
+	 * @param arrival   the location where vanilla would send the player in the nether
 	 */
 	public void createNetherIfMissing(World overworld, Location arrival) {
 		UUID islandId = saveDataManager.findIslandId(overworld.getKey());
@@ -227,21 +227,31 @@ public class IslandService {
 		saveDataManager.saveWorld(islandId, nether);
 	}
 
-	private NamespacedKey getCorrespondingWorldKey(NamespacedKey key) {
+	private NamespacedKey getCorrespondingWorldKey(World world) {
+		NamespacedKey key = world.getKey();
 		if (!isIslandWorld(key)) {
-			log.warning("Tried to get corresponding world for non-island.");
+			return null;
+		}
+
+		UUID islandId = saveDataManager.findIslandId(key);
+		if (islandId == null) {
 			return null;
 		}
 		
-		String keyValue = key.getKey();
-		if (keyValue.startsWith(OVERWORLD_PREFIX)) {
-			String id = keyValue.substring(OVERWORLD_PREFIX.length());
-			return new NamespacedKey(key.getNamespace(), NETHER_PREFIX + id);
-		} else if (keyValue.startsWith(NETHER_PREFIX)) {
-			String id = keyValue.substring(NETHER_PREFIX.length());
-			return new NamespacedKey(key.getNamespace(), OVERWORLD_PREFIX + id);
+		IslandData islandData = saveDataManager.getIslandData(islandId);
+
+		if (World.Environment.NORMAL.equals(world.getEnvironment())) {
+			if (islandData.getNetherKey() != null) {
+				return islandData.getNetherKey();
+			}
+			return new NamespacedKey(Globals.NAMESPACE, NETHER_PREFIX + islandId.toString());
+		} else if (World.Environment.NETHER.equals(world.getEnvironment())) {
+			if (islandData.getOverworldKey() != null) {
+				return islandData.getOverworldKey();
+			}
+			return new NamespacedKey(Globals.NAMESPACE, OVERWORLD_PREFIX + islandId.toString());
 		} else {
-			log.warning("Tried to get corresponding world for non-island world that is part of the proper namespace.");
+			log.warning("The environment %s is not supported on islands.".formatted(world.getEnvironment()));
 			return null;
 		}
 	}
