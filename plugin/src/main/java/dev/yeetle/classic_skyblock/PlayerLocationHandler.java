@@ -59,30 +59,4 @@ public class PlayerLocationHandler implements Listener {
 		log.info("Player %s joined world %s.".formatted(player.getName(), lastWorldKey));
 	}
 
-	@EventHandler
-	public void onPortal(PlayerPortalEvent event) {
-		if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
-			return;
-		}
-
-		World source = event.getFrom().getWorld();
-
-		// Default portal behavior for default worlds
-		if (!islandService.isIslandWorld(source)) {
-			return;
-		}
-
-		World target = islandService.loadCorrespondingWorld(source);
-
-		if (target == null) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage("Die zugehörige Welt konnte nicht geladen werden.");
-			return;
-		}
-
-		Location destination = event.getTo().clone();
-		destination.setWorld(target);
-
-		event.setTo(destination);
-	}
 }

@@ -19,6 +19,7 @@ public final class SkyblockPlugin extends JavaPlugin implements Listener {
 			return;
 		}
 
+		getServer().getPluginManager().registerEvents(new NetherPortalHandler(getIslandLoader()), this);
 		getServer().getPluginManager().registerEvents(new PlayerLocationHandler(getLogger(), getPlayerConfig(), getIslandLoader()), this);
 		getServer().getPluginManager().registerEvents(new IslandCreationHandler(getLogger(), getPlayerConfig(), getIslandLoader()), this);
 		getServer().getPluginManager().registerEvents(new IslandRespawnHandler(getPlayerConfig(), getIslandLoader()), this);
