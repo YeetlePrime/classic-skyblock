@@ -20,6 +20,7 @@ dependencies {
     // The server provides the Paper API at runtime, the tests need it on their own classpath.
     testImplementation(paperApi)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockbukkit)
     testImplementation(libs.archunit.junit5)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

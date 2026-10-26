@@ -25,7 +25,10 @@ public class IslandRespawnEventHandler implements Listener {
 			return;
 		}
 
-		teleportationService.saveSpawnPoint(event.getPlayer(), location);
+		if (teleportationService.saveSpawnPoint(event.getPlayer(), location)) {
+			event.getPlayer().sendMessage("Respawn point set");
+		}
+		event.setCancelled(true);
 	}
 
 	@EventHandler
