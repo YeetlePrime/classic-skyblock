@@ -8,6 +8,7 @@ import dev.yeetle.classicskyblock.player.persistence.PlayerRepository;
 import org.bukkit.*;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.VoxelShape;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -258,7 +259,7 @@ class TeleportationServiceTest {
 
 	@Test
 	void chunksThatAreNotGeneratedAreSkipped() {
-		world.markNotGenerated(0, 0);
+		world.markNotGenerated();
 		floor(3, 9, 0);
 		floor(-6, 9, 0);
 
@@ -297,8 +298,8 @@ class TeleportationServiceTest {
 			super(new WorldCreator(key));
 		}
 
-		void markNotGenerated(int chunkX, int chunkZ) {
-			notGeneratedChunks.add(chunkKey(chunkX, chunkZ));
+		void markNotGenerated() {
+			notGeneratedChunks.add(chunkKey(0, 0));
 		}
 
 		private static long chunkKey(int chunkX, int chunkZ) {
@@ -311,7 +312,7 @@ class TeleportationServiceTest {
 		}
 
 		@Override
-		public BlockMock getBlockAt(Coordinate coordinate) {
+		public @NonNull BlockMock getBlockAt(@NonNull Coordinate coordinate) {
 			return blocks.computeIfAbsent(coordinate, c -> new CollidingBlock(new Location(this, c.x, c.y, c.z)));
 		}
 	}
@@ -327,19 +328,19 @@ class TeleportationServiceTest {
 		}
 
 		@Override
-		public VoxelShape getCollisionShape() {
+		public @NonNull VoxelShape getCollisionShape() {
 			Material type = getType();
 			double height = type.name().endsWith("_SLAB") ? 0.5 : type.name().endsWith("_FENCE") ? 1.5 : 1;
 			Collection<BoundingBox> boxes = type.isCollidable() ? List.of(new BoundingBox(0, 0, 0, 1, height, 1)) : List.of();
 
 			return new VoxelShape() {
 				@Override
-				public Collection<BoundingBox> getBoundingBoxes() {
+				public @NonNull Collection<BoundingBox> getBoundingBoxes() {
 					return boxes;
 				}
 
 				@Override
-				public boolean overlaps(BoundingBox aabb) {
+				public boolean overlaps(@NonNull BoundingBox aabb) {
 					return boxes.stream().anyMatch(box -> box.overlaps(aabb));
 				}
 			};
