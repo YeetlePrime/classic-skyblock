@@ -5,6 +5,8 @@ import dev.yeetle.classicskyblock.player.domain.PlayerService;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockType;
+import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 
@@ -126,8 +128,11 @@ public class TeleportationService {
 		return destination;
 	}
 
-	public void saveSpawnPoint(Player player, Location location) {
+	public boolean saveSpawnPoint(Player player, Location location) {
+		Location previousLocation = playerService.getSpawnPoint(player, location.getWorld());
 		playerService.saveSpawnPoint(player, location);
+
+		return previousLocation == null || previousLocation.getX() != location.getX() || previousLocation.getY() != location.getY() || previousLocation.getZ() != location.getZ();
 	}
 
 	/**
@@ -178,21 +183,30 @@ public class TeleportationService {
 			return null;
 		}
 
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dy = -1; dy <= 1; dy++) {
-				for (int dz = -1; dz <= 1; dz++) {
-					Block block = spawn.getBlock().getRelative(dx, dy, dz);
+		Block block = spawn.getBlock();
+		
+		
+		if (Tag.BEDS.isTagged(block.getType())) {
+			Location respawnLocation = spawn.clone();
+			respawnLocation.setX(spawn.getX() + 0.5);
+			respawnLocation.setY(spawn.getY() + 1);
+			respawnLocation.setZ(spawn.getZ() + 0.5);
 
-					if (Tag.BEDS.isTagged(block.getType()) || block.getType() == Material.RESPAWN_ANCHOR) {
-						return spawn;
-					}
-				}
-			}
+			return respawnLocation;
+		} else if (block.getBlockData() instanceof RespawnAnchor respawnAnchor && respawnAnchor.getCharges() > 0) {
+			Location respawnLocation = spawn.clone();
+			respawnLocation.setX(spawn.getX() + 0.5);
+			respawnLocation.setY(spawn.getY() + 1);
+			respawnLocation.setZ(spawn.getZ() + 0.5);
+			respawnAnchor.setCharges(respawnAnchor.getCharges() - 1);
+			block.setBlockData(respawnAnchor);
+
+			return respawnLocation;
+			
+		} else {
+			playerService.removeSpawnPoint(player, world);
+			return null;
 		}
-
-		playerService.removeSpawnPoint(player, world);
-
-		return null;
 	}
 
 	/**
@@ -211,7 +225,7 @@ public class TeleportationService {
 
 		World world = spawnPoint.getWorld();
 		Integer configuredRadius = world.getGameRuleValue(GameRules.RESPAWN_RADIUS);
-		
+
 		int radius = Math.max(0, configuredRadius);
 
 		Location bestSafe = null;

@@ -270,10 +270,16 @@ class TeleportationServiceTest {
 	void aStoredBedHasPriorityOverTheSearch() {
 		floor(2, 9, 0);
 		place(-5, 10, 5, Material.RED_BED);
-		Location bedSpawn = new Location(world, -5.5, 10, 5.5);
-		service.saveSpawnPoint(player, bedSpawn);
+		Location bedLocation = new Location(world, -5.5, 10, 5.5);
+		world.getBlockAt(bedLocation).setType(Material.RED_BED);
+		service.saveSpawnPoint(player, bedLocation);
 
-		assertSamePosition(bedSpawn, service.findRespawnLocation(player));
+		Location expectedSpawn = bedLocation.clone();
+		expectedSpawn.setX(-5);
+		expectedSpawn.setY(11);
+		expectedSpawn.setZ(6);
+
+		assertSamePosition(expectedSpawn, service.findRespawnLocation(player));
 	}
 
 	@Test
