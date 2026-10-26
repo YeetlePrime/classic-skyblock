@@ -2,7 +2,7 @@ plugins {
     java
 }
 
-group = "dev.yeetle.classic_skyblock"
+group = "dev.yeetle.classicskyblock"
 version = "1.0.0"
 
 repositories {
@@ -12,8 +12,16 @@ repositories {
     }
 }
 
+val paperApi = "io.papermc.paper:paper-api:26.3.build.+"
+
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.3.build.+")
+    compileOnly(paperApi)
+
+    // The server provides the Paper API at runtime, the tests need it on their own classpath.
+    testImplementation(paperApi)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.archunit.junit5)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
@@ -22,3 +30,6 @@ java {
     }
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
