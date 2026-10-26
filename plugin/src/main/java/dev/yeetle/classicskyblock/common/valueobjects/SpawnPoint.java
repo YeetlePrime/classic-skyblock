@@ -4,12 +4,12 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 public class SpawnPoint {
-	private double x;
-	private double y;
-	private double z;
-	private float yaw;
-	private float pitch;
-
+	private final double x;
+	private final double y;
+	private final double z;
+	private final float yaw;
+	private final float pitch;
+	
 	public SpawnPoint(double x, double y, double z, float yaw, float pitch) {
 		this.x = x;
 		this.y = y;

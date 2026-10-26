@@ -19,10 +19,6 @@ public class IslandData {
 		return owner;
 	}
 
-	public void setOwner(UUID owner) {
-		this.owner = owner;
-	}
-
 	public NamespacedKey getOverworldKey() {
 		return overworldKey;
 	}
